@@ -13,7 +13,7 @@ with open("artefactos.json", "r") as j:
 def cliente(sock):
     global sock_clientes, arte_dict, artefactos
 
-    nombre = "Sebastian"
+    nombre = sock.getpeername()[1]
     arte_dict[nombre] = ["12", "15"]
 
     while True:
@@ -25,8 +25,12 @@ def cliente(sock):
         print(data)
 
         if data == ":q":
-            sock.send("¡Adiós y suerte completando tu colección!".encode())
-            
+            print(f"[SERVER] Cliente {nombre} desconectado.")
+            for s in sock_clientes:
+                if s != sock:
+                    s.send(f"[SERVER] Cliente {nombre} desconectado.".encode())
+                else:
+                    s.send("¡Adiós y suerte completando tu colección!".encode())
             # Se modifican las variables globales usando un mutex.
             with mutex:
                 sock_clientes.remove(sock)
@@ -63,7 +67,9 @@ while True:
 
     # Se acepta la conexión de un cliente
     conn, addr = s.accept()
-    print("Cliente conectado")
+    print(f"[SERVER] Cliente {conn.getpeername()[1]} conectado.")
+    for s in sock_clientes:
+        s.send(f"[SERVER] Cliente {conn.getpeername()[1]} conectado.".encode())
     sock_clientes.append(conn)
 
     # Se manda el mensaje de bienvenida
