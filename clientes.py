@@ -5,7 +5,7 @@ import sys
 
 
 class Conexion_Servidor():
-    def _init_(self, HOST = "localhost", PORT=8889): 
+    def _init_(self, HOST = "127.0.0.1", PORT=8889): 
        #Se reciben los clientes, para esto se crea una lista
        self.clientes = []
        # Se crea el socket y se conecta al servidor.
@@ -19,7 +19,7 @@ class Conexion_Servidor():
        #Aqui deberia activar el threading
        # Threading para ingresar a cada cliente
        aceptado = threading.Thread(target = self.bienvenida)
-       cargando = threading.Thread(target = self.conexion)
+       cargando = threading.Thread(target = self.cargando)
 
        aceptado.daemon = True
        aceptado.start()

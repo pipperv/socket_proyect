@@ -1,7 +1,7 @@
 import socket
 
 # Se configura el servidor para que corra localmente y en el puerto 8889.
-HOST = 'localhost'
+HOST = '127.0.0.1'
 PORT = 8889
 
 # Se crea el socket y se instancia en las variables anteriores, aceptando clientes.
