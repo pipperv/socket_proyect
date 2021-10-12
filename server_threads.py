@@ -47,29 +47,33 @@ def cliente(sock):
         except:
             break
 
-        print(data)
+        #Commands
+        if data[0] == ":":
+            data = data.split(' ')
+            if data[0] == ":q":
+                print(f"[SERVER] Cliente {nombre} desconectado.")
+                for s in sock_clientes:
+                    if s != sock:
+                        s.send(f"[SERVER] Cliente {nombre} desconectado.".encode())
+                    else:
+                        s.send("¡Adiós y suerte completando tu colección!".encode())
+                # Se modifican las variables globales usando un mutex.
+                with mutex:
+                    sock_clientes.remove(sock)
+                    arte_dict.pop(nombre)
+                sock.close()
+                break
+            
+            elif data[0] == ":p"
+                pass
 
-        if data == ":q":
-            print(f"[SERVER] Cliente {nombre} desconectado.")
-            for s in sock_clientes:
-                if s != sock:
-                    s.send(f"[SERVER] Cliente {nombre} desconectado.".encode())
-                else:
-                    s.send("¡Adiós y suerte completando tu colección!".encode())
-            # Se modifican las variables globales usando un mutex.
-            with mutex:
-                sock_clientes.remove(sock)
-                arte_dict.pop(nombre)
-            sock.close()
-            break
-
-        elif data == ":artefactos":
-            # Se crea una lista con los nombres (no números) de los artefactos.
-            arte_list = [artefactos[k] for k in arte_dict[nombre]]
-            sock.send(f"[SERVER] Tus artefactos son {', '.join(arte_list)}".encode())
-
-        elif data == ":larva":
-            data = "(:o)OOOooo"
+            elif data[0] == ":artefactos":
+                # Se crea una lista con los nombres (no números) de los artefactos.
+                arte_list = [artefactos[k] for k in arte_dict[nombre]]
+                sock.send(f"[SERVER] Tus artefactos son {', '.join(arte_list)}".encode())
+    
+            elif data[0] == ":larva":
+                data = "(:o)OOOooo"
 
         # Se manda el mensaje a todos los clientes.
         for s in sock_clientes:
