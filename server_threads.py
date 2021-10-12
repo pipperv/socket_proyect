@@ -71,25 +71,58 @@ def cliente(sock):
                     try:
                         user_sock = sock_clientes[list(arte_dict.keys()).index(msg[1])]
                     except:
-                        sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c")
+                        sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c".encode())
                     p_msg = ' '.join([str(item) for item in msg[2:]])
                     user_sock.send(f"(privado) Cliente {nombre}: {p_msg}".encode())
                 else:
-                    sock.send(f'[SERVER] Error de syntaxis (Syntaxis: ":p <Usuario> <Mensaje>")')
+                    sock.send(f'[SERVER] Error de syntaxis (Syntaxis: ":p <Usuario> <Mensaje>")'.encode())
 
             elif msg[0] == ":u":
                 users = list(arte_dict.keys())
                 users_string = ', '.join([str(item) for item in users])
                 sock.send(f'[SERVER] Los usuarios conectados son {users_string}'.encode())
 
+            elif msg[0] == ":smile":
+                data = ":)"
+
+            elif msg[0] == ":angry":
+                data = ">:("
+
+            elif msg[0] == ":combito":
+                data = "Q('-'Q)"
+
+            elif msg[0] == ":larva":
+                data = "(:o)OOOooo"
 
             elif msg[0] == ":artefactos":
                 # Se crea una lista con los nombres (no números) de los artefactos.
                 arte_list = [artefactos[k] for k in arte_dict[nombre]]
                 sock.send(f"[SERVER] Tus artefactos son {', '.join(arte_list)}".encode())
+
+            elif msg[0] == ":artefacto"
+                artef = artefactos[msg[1]]
+                sock.send(f"[SERVER] El Id '{msg[1]}' corresponde al artefacto '{artef}'".encode())
+
+            elif msg[0] == ":offer"
+                if len(msg) == 4:
+                    try:
+                        user_sock = sock_clientes[list(arte_dict.keys()).index(msg[1])]
+                    except:
+                        sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c".encode())
+                    user_sock.send(f"[SERVER] El Cliente {nombre} quiere intercambiar su {artefactos[msg[1]]} por tu {artefactos[msg[2]]}, ¿Aceptas? (:accept/:reject)".encode())
+                else:
+                    sock.send(f'[SERVER] Error de syntaxis (Syntaxis: ":offer <Usuario> <MiArtefactoId> <SuArtefactoId>")'.encode())
+
+            elif msg[0] == ":accept"
+                pass
+
+            elif msg[0] == ":reject"
+                pass
+
+            else:
+                sock.send(f"[SERVER] El comando '{msg[0]}' no existe.".encode())
     
-            elif msg[0] == ":larva":
-                data = "(:o)OOOooo"
+            
         else:
             data = msg
 
