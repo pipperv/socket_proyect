@@ -10,6 +10,7 @@ mutex = threading.Lock()
 with open("artefactos.json", "r") as j:
     artefactos = json.load(j)
 
+
 def cliente(sock):
     global sock_clientes, arte_dict, artefactos
 
@@ -99,24 +100,25 @@ def cliente(sock):
                 arte_list = [artefactos[k] for k in arte_dict[nombre]]
                 sock.send(f"[SERVER] Tus artefactos son {', '.join(arte_list)}".encode())
 
-            elif msg[0] == ":artefacto"
+            elif msg[0] == ":artefacto":
                 artef = artefactos[msg[1]]
                 sock.send(f"[SERVER] El Id '{msg[1]}' corresponde al artefacto '{artef}'".encode())
 
-            elif msg[0] == ":offer"
+            elif msg[0] == ":offer":
                 if len(msg) == 4:
                     try:
                         user_sock = sock_clientes[list(arte_dict.keys()).index(msg[1])]
                     except:
                         sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c".encode())
-                    user_sock.send(f"[SERVER] El Cliente {nombre} quiere intercambiar su {artefactos[msg[1]]} por tu {artefactos[msg[2]]}, ¿Aceptas? (:accept/:reject)".encode())
+                    if False:
+                        user_sock.send(f"[SERVER] El Cliente {nombre} quiere intercambiar su {artefactos[msg[1]]} por tu {artefactos[msg[2]]}, ¿Aceptas? (:accept/:reject)".encode())
                 else:
                     sock.send(f'[SERVER] Error de syntaxis (Syntaxis: ":offer <Usuario> <MiArtefactoId> <SuArtefactoId>")'.encode())
 
-            elif msg[0] == ":accept"
+            elif msg[0] == ":accept":
                 pass
 
-            elif msg[0] == ":reject"
+            elif msg[0] == ":reject":
                 pass
 
             else:
@@ -143,19 +145,19 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen()
 
-# Se buscan clientes que quieran conectarse.
 while True:
 
     # Se acepta la conexión de un cliente
     conn, addr = s.accept()
     print(f"[SERVER] Cliente {conn.getpeername()[1]} conectado.")
-    for s in sock_clientes:
-        s.send(f"[SERVER] Cliente {conn.getpeername()[1]} conectado.".encode())
-    sock_clientes.append(conn)
+    for sck in sock_clientes:
+        sck.send(f"[SERVER] Cliente {conn.getpeername()[1]} conectado.".encode())
+    sock_clientes.append(conn)   
 
     # Se manda el mensaje de bienvenida
     conn.send("¡Bienvenid@ al chat de Granjerxs!".encode())
 
-    # Se inicia el thread del cliente
     client_thread = threading.Thread(target=cliente, args=(conn,))
-    client_thread.start()
+    
+    client_thread.daemon = True
+    client_thread.start()       
