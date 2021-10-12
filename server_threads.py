@@ -37,20 +37,22 @@ def cliente(sock):
             else:
                 pass
 
-    nombre = sock.getpeername()[1]
+    nombre = str(sock.getpeername()[1])
     arte_dict[nombre] = arte
 
 
     while True:
+        data = None
+
         try:
-            data = sock.recv(1024).decode()
+            msg = sock.recv(1024).decode()
         except:
             break
 
         #Commands
-        if data[0] == ":":
-            data = data.split(' ')
-            if data[0] == ":q":
+        if msg[0] == ":":
+            msg = msg.split(' ')
+            if msg[0] == ":q":
                 print(f"[SERVER] Cliente {nombre} desconectado.")
                 for s in sock_clientes:
                     if s != sock:
@@ -64,23 +66,40 @@ def cliente(sock):
                 sock.close()
                 break
             
-            elif data[0] == ":p"
-                pass
+            elif msg[0] == ":p":
+                if len(msg) >= 3:
+                    try:
+                        user_sock = sock_clientes[list(arte_dict.keys()).index(msg[1])]
+                    except:
+                        sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c")
+                    p_msg = ' '.join([str(item) for item in msg[2:]])
+                    user_sock.send(f"(privado) Cliente {nombre}: {p_msg}".encode())
+                else:
+                    sock.send(f'[SERVER] Error de syntaxis (Syntaxis: ":p <Usuario> <Mensaje>")')
 
-            elif data[0] == ":artefactos":
+            elif msg[0] == ":u":
+                users = list(arte_dict.keys())
+                users_string = ', '.join([str(item) for item in users])
+                sock.send(f'[SERVER] Los usuarios conectados son {users_string}'.encode())
+
+
+            elif msg[0] == ":artefactos":
                 # Se crea una lista con los nombres (no números) de los artefactos.
                 arte_list = [artefactos[k] for k in arte_dict[nombre]]
                 sock.send(f"[SERVER] Tus artefactos son {', '.join(arte_list)}".encode())
     
-            elif data[0] == ":larva":
+            elif msg[0] == ":larva":
                 data = "(:o)OOOooo"
+        else:
+            data = msg
 
         # Se manda el mensaje a todos los clientes.
-        for s in sock_clientes:
-            if s != sock:
-                s.send(f"CLIENTE {nombre}: {data}".encode())
-            else:
-                s.send(f"Yo: {data}".encode())
+        if data != None:
+            for s in sock_clientes:
+                if s != sock:
+                    s.send(f"Cliente {nombre}: {data}".encode())
+                else:
+                    s.send(f"Yo: {data}".encode())
 
 # Se configura el servidor para que corra localmente y en el puerto 8889.
 HOST = '127.0.0.1'
