@@ -28,15 +28,12 @@ def cliente(sock):
             sock.send("[SERVER] No puedes tener mas de 6 artefactos!".encode())
         else:
             sock.send(f"[SERVER] Tus artefactos son {', '.join(art_list)}. ¿Esta bien? (Si/No)".encode())
-            try:
-                sino = sock.recv(1024).decode()
-            except:
-                break
+            sino = sock.recv(1024).decode()
             if sino == "Si":
                 sock.send("[SERVER] ¡OK!".encode())
-                arte = art_list
+                arte = answ_list
             else:
-                pass
+                sock.send("[SERVER] Vuelve a ingresar tu atefactos".encode())
 
     nombre = str(sock.getpeername()[1])
     arte_dict[nombre] = arte
@@ -110,9 +107,9 @@ def cliente(sock):
                         user_sock = sock_clientes[list(arte_dict.keys()).index(msg[1])]
                         if (msg[2] in arte_dict[nombre]) and (msg[3] in arte_dict[msg[1]]):
                             user_sock.send(f"[SERVER] El Cliente {nombre} quiere intercambiar su {artefactos[msg[2]]} por tu {artefactos[msg[3]]}, ¿Aceptas? (:accept/:reject)".encode())
-                        elif !(msg[2] in arte_dict[nombre]):
+                        elif not (msg[2] in arte_dict[nombre]):
                             sock.send(f"[SERVER] No tienes el articulo {artefactos[msg[2]]}. :c".encode())
-                        elif !(msg[3] in arte_dict[msg[1]]):
+                        elif not (msg[3] in arte_dict[msg[1]]):
                             sock.send(f"[SERVER] El cliente {msg[1]} tiene el articulo {artefactos[msg[3]]}. :c".encode())
                     except:
                         sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c".encode())
