@@ -108,14 +108,14 @@ def cliente(sock):
                 if len(msg) == 4:
                     try:
                         user_sock = sock_clientes[list(arte_dict.keys()).index(msg[1])]
+                        if (msg[2] in arte_dict[nombre]) and (msg[3] in arte_dict[msg[1]]):
+                            user_sock.send(f"[SERVER] El Cliente {nombre} quiere intercambiar su {artefactos[msg[2]]} por tu {artefactos[msg[3]]}, ¿Aceptas? (:accept/:reject)".encode())
+                        elif !(msg[2] in arte_dict[nombre]):
+                            sock.send(f"[SERVER] No tienes el articulo {artefactos[msg[2]]}. :c".encode())
+                        elif !(msg[3] in arte_dict[msg[1]]):
+                            sock.send(f"[SERVER] El cliente {msg[1]} tiene el articulo {artefactos[msg[3]]}. :c".encode())
                     except:
                         sock.send(f"[SERVER] El usuario {msg[1]} no esta en este servidor. :c".encode())
-                    if (msg[1] in arte_dict[nombre]) and (msg[2] in arte_dict[msg[0]]):
-                        user_sock.send(f"[SERVER] El Cliente {nombre} quiere intercambiar su {artefactos[msg[1]]} por tu {artefactos[msg[2]]}, ¿Aceptas? (:accept/:reject)".encode())
-                    elif !(msg[1] in arte_dict[nombre]):
-                        sock.send(f"[SERVER] No tienes el articulo {artefactos[msg[1]]}. :c".encode())
-                    elif !(msg[2] in arte_dict[msg[0]]):
-                        sock.send(f"[SERVER] El cliente {msg[0]} tiene el articulo {artefactos[msg[2]]}. :c".encode())
                 else:
                     sock.send(f'[SERVER] Error de syntaxis (Syntaxis: ":offer <Usuario> <MiArtefactoId> <SuArtefactoId>")'.encode())
 
